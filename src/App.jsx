@@ -240,6 +240,37 @@ const buildDiagram = ({
 const formatNumber = (value, digits = 2) =>
   Number.isFinite(value) ? value.toFixed(digits) : '—';
 
+const findExtrema = (data, key) => {
+  if (!data.length) {
+    return {
+      min: 0,
+      minX: 0,
+      max: 0,
+      maxX: 0,
+    };
+  }
+
+  return data.reduce(
+    (acc, point) => {
+      if (point[key] < acc.min) {
+        acc.min = point[key];
+        acc.minX = point.x;
+      }
+      if (point[key] > acc.max) {
+        acc.max = point[key];
+        acc.maxX = point.x;
+      }
+      return acc;
+    },
+    {
+      min: data[0][key],
+      minX: data[0].x,
+      max: data[0][key],
+      maxX: data[0].x,
+    }
+  );
+};
+
 const Diagram = ({ title, data, unit, color }) => {
   if (!data.length) return null;
   const width = 560;
@@ -403,6 +434,19 @@ const App = () => {
       return { ...support, reaction, moment };
     });
   }, [normalizedSupports, beamResults]);
+
+  const shearExtrema = useMemo(
+    () => findExtrema(diagramData, 'shear'),
+    [diagramData]
+  );
+  const momentExtrema = useMemo(
+    () => findExtrema(diagramData, 'moment'),
+    [diagramData]
+  );
+  const deflectionExtrema = useMemo(
+    () => findExtrema(diagramData, 'deflection'),
+    [diagramData]
+  );
 
   const isCantileverStart =
     normalizedSupports.length === 0 || normalizedSupports[0].position > 0;
@@ -753,6 +797,38 @@ const App = () => {
               value: point.deflection,
             }))}
           />
+        </div>
+        <div className="extrema-grid">
+          <div>
+            <h3>Shear extrema</h3>
+            <p>
+              Max: {formatNumber(shearExtrema.max, 2)} kN @{' '}
+              {formatNumber(shearExtrema.maxX, 0)} mm
+              <br />
+              Min: {formatNumber(shearExtrema.min, 2)} kN @{' '}
+              {formatNumber(shearExtrema.minX, 0)} mm
+            </p>
+          </div>
+          <div>
+            <h3>Moment extrema</h3>
+            <p>
+              Max: {formatNumber(momentExtrema.max, 2)} kN·m @{' '}
+              {formatNumber(momentExtrema.maxX, 0)} mm
+              <br />
+              Min: {formatNumber(momentExtrema.min, 2)} kN·m @{' '}
+              {formatNumber(momentExtrema.minX, 0)} mm
+            </p>
+          </div>
+          <div>
+            <h3>Deflection extrema</h3>
+            <p>
+              Max: {formatNumber(deflectionExtrema.max, 3)} mm @{' '}
+              {formatNumber(deflectionExtrema.maxX, 0)} mm
+              <br />
+              Min: {formatNumber(deflectionExtrema.min, 3)} mm @{' '}
+              {formatNumber(deflectionExtrema.minX, 0)} mm
+            </p>
+          </div>
         </div>
       </section>
     </div>

@@ -164,6 +164,26 @@ button.danger {
   gap: 16px;
 }
 
+.extrema-grid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+  font-size: 0.85rem;
+  color: #475569;
+}
+
+.extrema-grid h3 {
+  margin: 0 0 6px;
+  font-size: 0.9rem;
+  color: #0f172a;
+}
+
+.extrema-grid p {
+  margin: 0;
+  line-height: 1.4;
+}
+
 .diagram {
   border-radius: 12px;
   background: #f8fafc;
